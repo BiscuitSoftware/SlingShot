@@ -1,0 +1,34 @@
+##############################################################
+#                   *~~~* SLINGSHOT *~~~*                    #
+##############################################################
+#                       BY REVILO410                         #
+##############################################################
+
+#################
+#  DO NOT EDIT  #
+version: "1.1"
+#################
+
+##############################################################
+#                         GENERAL INFO                       #
+##############################################################
+
+#Server to slingshot to (CASE SENSITIVE)
+target: "lobby"
+
+#Message to send to slingshotted players
+#%REASON% will use the original kick reason
+message: "&a&oYou have been returned to the lobby for reason&f: %REASON%"
+
+#If the "slingshot" server goes down, then the player will be kicked
+#This is the message to show the kicked player
+kick-message: "The lobby server was not available, so you have been kicked from the network"
+
+# Servers to exclude from slingshot (CASE SENSITIVE)
+# List like:
+# no_slingshot:
+# - Server1
+# - Server2
+# etc.
+
+no_slingshot: []
