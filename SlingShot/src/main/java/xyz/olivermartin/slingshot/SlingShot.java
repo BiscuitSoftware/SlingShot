@@ -51,11 +51,11 @@ public class SlingShot extends Plugin implements Listener {
 		if (configman.config.getStringList("no_slingshot").contains(s.getName())) {
 			return;
 		}
-
+		
 		// If the player is kicked from the "slingshot" server
-		if (s.getName().equals(configman.config.getString("target"))) {
+		if (s.getName().equalsIgnoreCase(configman.config.getString("target"))) {
 
-			p.disconnect(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', configman.config.getString("kick-message"))));
+			p.disconnect(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', configman.config.getString("kick-message").replace("%REASON%", BaseComponent.toLegacyText(event.getKickReasonComponent())))));
 			event.setCancelled(true);
 			return;
 
