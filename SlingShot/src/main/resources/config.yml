@@ -6,7 +6,7 @@
 
 #################
 #  DO NOT EDIT  #
-version: "1.1"
+version: "1.1.1"
 #################
 
 ##############################################################
@@ -20,8 +20,9 @@ target: "lobby"
 #%REASON% will use the original kick reason
 message: "&a&oYou have been returned to the lobby for reason&f: %REASON%"
 
-#If the "slingshot" server goes down, then the player will be kicked
+#If the "slingshot" target server goes down, then the player will be kicked
 #This is the message to show the kicked player
+#%REASON% will use the original kick reason
 kick-message: "The lobby server was not available, so you have been kicked from the network"
 
 # Servers to exclude from slingshot (CASE SENSITIVE)

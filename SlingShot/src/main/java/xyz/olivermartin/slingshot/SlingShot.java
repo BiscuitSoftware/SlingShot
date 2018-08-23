@@ -25,7 +25,7 @@ public class SlingShot extends Plugin implements Listener {
 	public static File configDir;
 	public static ConfigManager configman;
 
-	public static final String LATEST_VERSION = "1.1";
+	public static final String LATEST_VERSION = "1.1.1";
 
 	public static SlingShot getInstance() {
 		return instance;
@@ -41,17 +41,27 @@ public class SlingShot extends Plugin implements Listener {
 		//
 	}
 
+	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onServerKick(ServerKickEvent event) {
 
 		ProxiedPlayer p = event.getPlayer();
 		ServerInfo s = event.getKickedFrom();
 
+		if (event.isCancelled()) {
+			return;
+		}
+
+		// This is a fix for an issue in Waterfall that calls this server kick event when players disconnect from a non-lobby server
+		if (event.getKickReason().contains("[Proxy] Lost connection to server")) {
+			return;
+		}
+
 		// If the player is kicked from a server that should not use slingshot
 		if (configman.config.getStringList("no_slingshot").contains(s.getName())) {
 			return;
 		}
-		
+
 		// If the player is kicked from the "slingshot" server
 		if (s.getName().equalsIgnoreCase(configman.config.getString("target"))) {
 
@@ -83,7 +93,7 @@ public class SlingShot extends Plugin implements Listener {
 
 		configman.startupConfig();
 
-		if (!configman.config.getString("version").equals(LATEST_VERSION)) {
+		if (! (configman.config.getString("version").equals(LATEST_VERSION) || configman.config.getString("version").equals("1.1"))) {
 
 			System.out.println("[SlingShot] CONFIG VERSION INCORRECT - Your config.yml is outdated. It will be saved as config-old.yml, and a fresh config.yml will be created.");
 
