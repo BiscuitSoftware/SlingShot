@@ -16,12 +16,15 @@ public class SlingShotCommand extends Command {
 
 		if (args.length != 1) return;
 
-		if (args[0].toLowerCase().equals("reload"))
-		{
+		if (args[0].toLowerCase().equals("reload")) {
 			sender.sendMessage(new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', "&aPreparing to reload config!")).create());
 			SlingShot.configman.startupConfig();
 			sender.sendMessage(new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', "&6Reload completed!")).create());
 			sender.sendMessage(new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', "&aIf any errors occured they can be viewed in the console log!")).create());
+		}
+		
+		if (args[0].toLowerCase().equals("debug")) {
+			SlingShot.debug = !SlingShot.debug;
 		}
 
 	}
