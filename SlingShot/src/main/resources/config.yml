@@ -1,20 +1,28 @@
-##############################################################
-#                   *~~~* SLINGSHOT *~~~*                    #
-##############################################################
-#                       BY REVILO410                         #
-##############################################################
+############################################################
+# +------------------------------------------------------+ #
+# |                      SlingShot                       | #
+# +------------------------------------------------------+ #
+############################################################
+
+# By Revilo410
 
 #################
 #  DO NOT EDIT  #
 version: "2.0"  #
 #################
 
-##############################################################
-#                         GENERAL INFO                       #
-##############################################################
+# 1. GENERAL
+# 2. MESSAGES
 
-# Servers to slingshot to (CASE SENSITIVE)
-# The top server will be tried first, followed by any listed below
+############################################################
+# +------------------------------------------------------+ #
+# |                        GENERAL                       | #
+# +------------------------------------------------------+ #
+############################################################
+
+# These are the SlingShot target servers
+# The first server on the list which is online will be chosen as the target server
+# The highest priority server is at the top, the lowest priority at the bottom
 target-list:
 - "lobby"
 # - "lobby2"
@@ -24,20 +32,31 @@ target-list:
 # How long should SlingShot wait for a response from the target server before assuming it is offline?
 timeout: 25 #ms
 
-#Message to send to slingshotted players
-#%REASON% will use the original kick reason
-message: "&a&oYou have been returned to the lobby for reason&f: %REASON%"
-
-#If the "slingshot" target server goes down, then the player will be kicked
-#This is the message to show the kicked player
-#%REASON% will use the original kick reason
-kick-message: "The lobby server was not available, so you have been kicked from the network"
-
-# Servers to exclude from slingshot (CASE SENSITIVE)
+# Servers to exclude from SlingShot (CASE SENSITIVE)
+# SlingShot will not catch players being disconnected from these servers.
 # List like:
+# 
 # no_slingshot:
 # - Server1
 # - Server2
 # etc.
-
 no_slingshot: []
+
+############################################################
+# +------------------------------------------------------+ #
+# |                       MESSAGES                       | #
+# +------------------------------------------------------+ #
+############################################################
+
+# Message to send to players that have been SlingShot'ed
+# 
+# %REASON% will use the original kick reason
+message: "&a&oYou have been returned to the lobby for reason&f: %REASON%"
+
+# If none of the target servers are online,
+# or the player is kicked from the target server while it is still online,
+# then they will be disconnected from the network.
+# This is the message to show the kicked player
+# 
+# %REASON% will use the original kick reason
+kick-message: "The lobby server was not available, so you have been kicked from the network"
