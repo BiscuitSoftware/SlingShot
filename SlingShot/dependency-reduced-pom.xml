@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>xyz.olivermartin.slingshot</groupId>
   <artifactId>slingshot</artifactId>
-  <version>1.2</version>
+  <version>2.0</version>
   <build>
     <plugins>
       <plugin>
