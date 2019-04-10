@@ -4,6 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.CopyOption;
 import java.nio.file.Files;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.bstats.bungeecord.Metrics;
 
@@ -30,6 +34,8 @@ public class SlingShot extends Plugin implements Listener {
 	public static ConfigManager configman;
 	public static boolean debug = false;
 
+	private static Map<String, Boolean> onlineMap;
+
 	public static final String LATEST_VERSION = "1.2";
 
 	public static void debugMessage(String message) {
@@ -38,6 +44,10 @@ public class SlingShot extends Plugin implements Listener {
 
 	public static SlingShot getInstance() {
 		return instance;
+	}
+
+	public static List<String> getTargetList() {
+		return configman.config.getStringList("target-list");
 	}
 
 	@EventHandler
@@ -87,8 +97,76 @@ public class SlingShot extends Plugin implements Listener {
 
 		/* END THE EXIT CONDITIONS */
 
+		// FIND THE FIRST ONLINE TARGET SERVER!
+		Iterator<String> it = getTargetList().iterator();
+
+		boolean found = false;
+		String target = "";
+
+		while (it.hasNext() && !found) {
+
+			final String next = it.next();
+
+			onlineMap.remove(next);
+
+			getProxy().getServers().get(next).ping(new Callback<ServerPing>() {
+
+				@Override
+				public void done(ServerPing result, Throwable error) {
+
+					boolean targetOnline = (error == null);
+
+					synchronized (next) {
+
+						// If the target server is online then connect to it, otherwise kick the player
+						if (targetOnline) {
+							onlineMap.put(next, true);
+						} else {
+							onlineMap.put(next, false);
+						}
+						next.notify();
+					}
+
+					return;
+
+				}
+
+			});
+
+			synchronized (next) {
+				try {
+					next.wait(250);
+				} catch (InterruptedException e) {
+					System.err.println("SlingShot didn't get a response from your servers in time. Your server must be lagging!");
+				}
+			}
+
+			if (onlineMap.containsKey(next)) {
+				if (onlineMap.get(next)) {
+					found = true;
+					target = next;
+				}
+			}
+
+		}
+
+		if (!found) {
+			// TODO no target servers are online!
+			debugMessage("The target server is not online.");
+			debugMessage("Disconnect player with reason: " + configman.config.getString("kick-message").replace("%REASON%", BaseComponent.toLegacyText(event.getKickReasonComponent())));
+
+			p.disconnect(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', configman.config.getString("kick-message").replace("%REASON%", BaseComponent.toLegacyText(event.getKickReasonComponent())))));
+
+			event.setCancelled(true);
+
+			debugMessage("--- END KICK EVENT ---");
+			return;
+		}
+
+		// we found the best target server that is online:
+
 		// If the player is kicked from the "slingshot" server
-		if (s.getName().equalsIgnoreCase(configman.config.getString("target"))) {
+		if (s.getName().equalsIgnoreCase(target)) {
 
 			debugMessage("Player is being kicked from the slingshot server");
 			debugMessage("Disconnect with reason: " + configman.config.getString("kick-message").replace("%REASON%", BaseComponent.toLegacyText(event.getKickReasonComponent())));
@@ -103,77 +181,29 @@ public class SlingShot extends Plugin implements Listener {
 
 		debugMessage("This is a regular kick that needs dealing with by slingshot.");
 
+		debugMessage("The target server is online.");
 
+		event.setCancelServer(ProxyServer.getInstance().getServerInfo(target));
 
-		// Check if the target server is online
-		getProxy().getServers().get(configman.config.getString("target")).ping(new Callback<ServerPing>() {
+		debugMessage("Player will be connected to the target server on kick.");
 
-			@Override
-			public void done(ServerPing result, Throwable error) {
+		p.sendMessage(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', configman.config.getString("message").replace("%REASON%", BaseComponent.toLegacyText(event.getKickReasonComponent())))));
 
-				boolean targetOnline = (error == null);
+		debugMessage("Player notified with message: " + configman.config.getString("message").replace("%REASON%", BaseComponent.toLegacyText(event.getKickReasonComponent())));
+		debugMessage("--- END KICK EVENT ---");
 
-				synchronized (event) {
-
-					// TODO: The issue is, ONLY SOMETIMES (need to issue a few kicks to see it), the player being kicked from a server while the lobby is down will result in the correct message not being shown. Instead they see the red text error message about a fallback server not being available. im guessing that happens when this thread takes too long to respond.
-
-					// If the target server is online then connect to it, otherwise kick the player
-					if (targetOnline) {
-
-						debugMessage("The target server is online.");
-
-						//TODO try removing this all together?event.getPlayer().connect(ProxyServer.getInstance().getServerInfo(configman.config.getString("target")));
-
-						event.setCancelServer(ProxyServer.getInstance().getServerInfo(configman.config.getString("target")));
-
-						debugMessage("Player will be connected to the target server on kick.");
-
-						p.sendMessage(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', configman.config.getString("message").replace("%REASON%", BaseComponent.toLegacyText(event.getKickReasonComponent())))));
-
-						debugMessage("Player notified with message: " + configman.config.getString("message").replace("%REASON%", BaseComponent.toLegacyText(event.getKickReasonComponent())));
-						debugMessage("--- END KICK EVENT ---");
-
-					} else {
-
-						debugMessage("The target server is not online.");
-						debugMessage("Disconnect player with reason: " + configman.config.getString("kick-message").replace("%REASON%", BaseComponent.toLegacyText(event.getKickReasonComponent())));
-
-						p.disconnect(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', configman.config.getString("kick-message").replace("%REASON%", BaseComponent.toLegacyText(event.getKickReasonComponent())))));
-
-						debugMessage("--- END KICK EVENT ---");
-
-					}
-
-					event.notify();
-
-				}
-
-				return;
-
-			}
-
-		});
-
-		synchronized (event) {
-
-			try {
-				event.wait(250);
-			} catch (InterruptedException e) {
-				System.err.println("SlingShot didn't get a response from your servers in time. Your server must be lagging!");
-				/*EMPTY*/
-			}
-
-			event.setCancelled(true);
-
-		}
+		event.setCancelled(true);
 
 	}
+
 
 	public void onEnable() {
 
 		instance = this;
 		configDir = getDataFolder();
 		configman = new ConfigManager();
+
+		onlineMap = new HashMap<String, Boolean>();
 
 		@SuppressWarnings("unused")
 		Metrics metrics = new Metrics(this);

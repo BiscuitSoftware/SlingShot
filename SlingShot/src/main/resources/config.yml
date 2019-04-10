@@ -13,8 +13,13 @@ version: "1.2"  #
 #                         GENERAL INFO                       #
 ##############################################################
 
-#Server to slingshot to (CASE SENSITIVE)
-target: "lobby"
+# Servers to slingshot to (CASE SENSITIVE)
+# The top server will be tried first, followed by any listed below
+target-list:
+- "lobby"
+# - "lobby2"
+# - "lobby3"
+# ...
 
 #Message to send to slingshotted players
 #%REASON% will use the original kick reason
