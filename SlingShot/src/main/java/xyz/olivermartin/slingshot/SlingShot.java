@@ -83,6 +83,8 @@ public class SlingShot extends Plugin implements Listener {
 			return;
 		}
 
+		/* END THE EXIT CONDITIONS */
+
 		// If the player is kicked from the "slingshot" server
 		if (s.getName().equalsIgnoreCase(configman.config.getString("target"))) {
 
@@ -99,6 +101,8 @@ public class SlingShot extends Plugin implements Listener {
 
 		debugMessage("This is a regular kick that needs dealing with by slingshot.");
 
+
+
 		// Check if the target server is online
 		getProxy().getServers().get(configman.config.getString("target")).ping(new Callback<ServerPing>() {
 
@@ -106,31 +110,39 @@ public class SlingShot extends Plugin implements Listener {
 			public void done(ServerPing result, Throwable error) {
 
 				boolean targetOnline = (error == null);
-				
-				// TODO: The issue is, ONLY SOMETIMES (need to issue a few kicks to see it), the player being kicked from a server while the lobby is down will result in the correct message not being shown. Instead they see the red text error message about a fallback server not being available. im guessing that happens when this thread takes too long to respond.
 
-				// If the target server is online then connect to it, otherwise kick the player
-				if (targetOnline) {
+				synchronized (event) {
 
-					debugMessage("The target server is online.");
+					// TODO: The issue is, ONLY SOMETIMES (need to issue a few kicks to see it), the player being kicked from a server while the lobby is down will result in the correct message not being shown. Instead they see the red text error message about a fallback server not being available. im guessing that happens when this thread takes too long to respond.
 
-					event.setCancelServer(ProxyServer.getInstance().getServerInfo(configman.config.getString("target")));
+					// If the target server is online then connect to it, otherwise kick the player
+					if (targetOnline) {
 
-					debugMessage("Player will be connected to the target server on kick.");
+						debugMessage("The target server is online.");
 
-					p.sendMessage(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', configman.config.getString("message").replace("%REASON%", BaseComponent.toLegacyText(event.getKickReasonComponent())))));
+						//TODO try removing this all together?event.getPlayer().connect(ProxyServer.getInstance().getServerInfo(configman.config.getString("target")));
 
-					debugMessage("Player notified with message: " + configman.config.getString("message").replace("%REASON%", BaseComponent.toLegacyText(event.getKickReasonComponent())));
-					debugMessage("--- END KICK EVENT ---");
+						event.setCancelServer(ProxyServer.getInstance().getServerInfo(configman.config.getString("target")));
 
-				} else {
+						debugMessage("Player will be connected to the target server on kick.");
 
-					debugMessage("The target server is not online.");
-					debugMessage("Disconnect player with reason: " + configman.config.getString("kick-message").replace("%REASON%", BaseComponent.toLegacyText(event.getKickReasonComponent())));
+						p.sendMessage(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', configman.config.getString("message").replace("%REASON%", BaseComponent.toLegacyText(event.getKickReasonComponent())))));
 
-					p.disconnect(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', configman.config.getString("kick-message").replace("%REASON%", BaseComponent.toLegacyText(event.getKickReasonComponent())))));
+						debugMessage("Player notified with message: " + configman.config.getString("message").replace("%REASON%", BaseComponent.toLegacyText(event.getKickReasonComponent())));
+						debugMessage("--- END KICK EVENT ---");
 
-					debugMessage("--- END KICK EVENT ---");
+					} else {
+
+						debugMessage("The target server is not online.");
+						debugMessage("Disconnect player with reason: " + configman.config.getString("kick-message").replace("%REASON%", BaseComponent.toLegacyText(event.getKickReasonComponent())));
+
+						p.disconnect(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', configman.config.getString("kick-message").replace("%REASON%", BaseComponent.toLegacyText(event.getKickReasonComponent())))));
+
+						debugMessage("--- END KICK EVENT ---");
+
+					}
+
+					event.notify();
 
 				}
 
@@ -140,7 +152,17 @@ public class SlingShot extends Plugin implements Listener {
 
 		});
 
-		event.setCancelled(true);
+		synchronized (event) {
+
+			try {
+				event.wait(250);
+			} catch (InterruptedException e) {
+				/*EMPTY*/
+			}
+
+			event.setCancelled(true);
+
+		}
 
 	}
 
