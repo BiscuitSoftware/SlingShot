@@ -93,12 +93,12 @@ public class SlingShot extends Plugin implements Listener {
 		// If config isn't an allowed version
 		if (! (Arrays.stream(ALLOWED_VERSIONS).anyMatch(x -> x.equals(configman.config.getString("version"))) ) ) {
 
-			getLogger().warning("[SlingShot] CONFIG VERSION INCORRECT - Your config.yml is outdated. It will be saved as config-old.yml, and a fresh config.yml will be created.");
+			getLogger().warning("[SlingShot] CONFIG VERSION INCORRECT - Your config.yml is outdated. It will be saved as config-old-pre-v2.yml, and a fresh config.yml will be created.");
 
 			File f = new File(SlingShot.configDir + File.separator + "config.yml");
 
 			try {
-				Files.copy(f.toPath(), new File(SlingShot.configDir, "config-old.yml").toPath(), new CopyOption[0]);
+				Files.copy(f.toPath(), new File(SlingShot.configDir, "config-old-pre-v2.yml").toPath(), new CopyOption[0]);
 				Files.deleteIfExists(f.toPath());
 				configman.startupConfig();
 			} catch (IOException e) {
