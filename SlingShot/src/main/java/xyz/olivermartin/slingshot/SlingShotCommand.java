@@ -22,7 +22,7 @@ public class SlingShotCommand extends Command {
 			sender.sendMessage(new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', "&6Reload completed!")).create());
 			sender.sendMessage(new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', "&aIf any errors occured they can be viewed in the console log!")).create());
 		}
-		
+
 		if (args[0].toLowerCase().equals("debug")) {
 			SlingShot.debug = !SlingShot.debug;
 		}
