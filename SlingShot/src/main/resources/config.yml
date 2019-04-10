@@ -12,7 +12,8 @@ version: "2.0"  #
 #################
 
 # 1. GENERAL
-# 2. MESSAGES
+# 2. KICK REASON MATCHING
+# 3. MESSAGES
 
 ############################################################
 # +------------------------------------------------------+ #
@@ -41,6 +42,22 @@ timeout: 25 #ms
 # - Server2
 # etc.
 no_slingshot: []
+
+############################################################
+# +------------------------------------------------------+ #
+# |                  KICK REASON MATCHING                | #
+# +------------------------------------------------------+ #
+############################################################
+
+# Should the blacklist below actually be used as a whitelist?
+use_as_whitelist: false
+
+# Here you can list kick reasons which will not trigger SlingShot
+# This is useful if you want particular kicks to disconnect them completely and not send them to the lobby
+# If the setting above is set to true then this list will be used as a whitelist instead of a blacklist
+# This list uses regular expressions to decide if they match
+# Starting with the sequence (?i) means it will be case insensitive
+kick_reason_blacklist: []
 
 ############################################################
 # +------------------------------------------------------+ #

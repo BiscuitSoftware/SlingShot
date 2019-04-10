@@ -55,6 +55,16 @@ public class SlingShot extends Plugin implements Listener {
 		return configman.config.getStringList("target-list");
 	}
 
+	public static boolean isReasonExempt(String reason) {
+
+		boolean whitelist = configman.config.getBoolean("use_as_whitelist");
+
+		boolean matchesList = configman.config.getStringList("kick_reason_blacklist").stream().anyMatch(x -> reason.matches(x));
+
+		return whitelist ^ matchesList;
+
+	}
+
 	/* END STATIC */
 
 	public void onEnable() {
@@ -142,6 +152,13 @@ public class SlingShot extends Plugin implements Listener {
 		// If the player is kicked from a server that should not use SlingShot lets ignore it too
 		if (configman.config.getStringList("no_slingshot").contains(s.getName())) {
 			debugMessage("Player is kicked from a server that doesnt use slingshot");
+			debugMessage("--- END KICK EVENT ---");
+			return;
+		}
+
+		// If the kick reason is exempt from SlingShot
+		if (isReasonExempt(event.getKickReason())) {
+			debugMessage("Kick Reason is exempt from SlingShot!");
 			debugMessage("--- END KICK EVENT ---");
 			return;
 		}
