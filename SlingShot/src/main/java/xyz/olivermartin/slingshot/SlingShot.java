@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.nio.file.CopyOption;
 import java.nio.file.Files;
 
+import org.bstats.bungeecord.Metrics;
+
 import net.md_5.bungee.api.Callback;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
@@ -172,6 +174,9 @@ public class SlingShot extends Plugin implements Listener {
 		instance = this;
 		configDir = getDataFolder();
 		configman = new ConfigManager();
+
+		@SuppressWarnings("unused")
+		Metrics metrics = new Metrics(this);
 
 		if (!getDataFolder().exists()) {
 
