@@ -157,6 +157,7 @@ public class SlingShot extends Plugin implements Listener {
 			try {
 				event.wait(250);
 			} catch (InterruptedException e) {
+				System.err.println("SlingShot didn't get a response from your servers in time. Your server must be lagging!");
 				/*EMPTY*/
 			}
 
