@@ -30,7 +30,7 @@ public class SlingShot extends Plugin implements Listener {
 	public static ConfigManager configman;
 	public static boolean debug = false;
 
-	public static final String LATEST_VERSION = "1.1.2";
+	public static final String LATEST_VERSION = "1.2";
 
 	public static void debugMessage(String message) {
 		if (debug) ProxyServer.getInstance().getLogger().info("[DEBUG] " + message);
@@ -187,7 +187,7 @@ public class SlingShot extends Plugin implements Listener {
 
 		configman.startupConfig();
 
-		if (! (configman.config.getString("version").equals(LATEST_VERSION) || configman.config.getString("version").equals("1.1.1") || configman.config.getString("version").equals("1.1"))) {
+		if (! (configman.config.getString("version").equals(LATEST_VERSION) )) {
 
 			System.out.println("[SlingShot] CONFIG VERSION INCORRECT - Your config.yml is outdated. It will be saved as config-old.yml, and a fresh config.yml will be created.");
 
