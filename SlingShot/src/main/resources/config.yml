@@ -21,6 +21,9 @@ target-list:
 # - "lobby3"
 # ...
 
+# How long should SlingShot wait for a response from the target server before assuming it is offline?
+timeout: 25 #ms
+
 #Message to send to slingshotted players
 #%REASON% will use the original kick reason
 message: "&a&oYou have been returned to the lobby for reason&f: %REASON%"

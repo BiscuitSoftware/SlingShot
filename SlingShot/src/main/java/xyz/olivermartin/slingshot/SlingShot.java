@@ -135,9 +135,9 @@ public class SlingShot extends Plugin implements Listener {
 
 			synchronized (next) {
 				try {
-					next.wait(250);
+					next.wait(configman.config.getInt("timeout"));
 				} catch (InterruptedException e) {
-					System.err.println("SlingShot didn't get a response from your servers in time. Your server must be lagging!");
+					System.err.println("SlingShot was interrupted while waiting for a response from your server. Your network must be lagging!s");
 				}
 			}
 
@@ -157,7 +157,7 @@ public class SlingShot extends Plugin implements Listener {
 
 			p.disconnect(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', configman.config.getString("kick-message").replace("%REASON%", BaseComponent.toLegacyText(event.getKickReasonComponent())))));
 
-			event.setCancelled(true);
+			// TODO do we need this to cancel it?? event.setCancelled(true);
 
 			debugMessage("--- END KICK EVENT ---");
 			return;
@@ -172,7 +172,7 @@ public class SlingShot extends Plugin implements Listener {
 			debugMessage("Disconnect with reason: " + configman.config.getString("kick-message").replace("%REASON%", BaseComponent.toLegacyText(event.getKickReasonComponent())));
 
 			p.disconnect(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', configman.config.getString("kick-message").replace("%REASON%", BaseComponent.toLegacyText(event.getKickReasonComponent())))));
-			event.setCancelled(true);
+			//TODO do we need this to cancel it?? event.setCancelled(true);
 
 			debugMessage("--- END KICK EVENT ---");
 			return;
